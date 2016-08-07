@@ -81,9 +81,16 @@ public class UserService
             map.put("msg","用户密码错误！");
             return map;
         }
-
-        String ticket = addTicket(u.getId());//用户登录成功后，下发ticket
-        map.put("ticket",ticket);
+        //单点登录
+        String ifTicketExist = loginTicketDao.selectTicketByUseridAndStatus(u.getId(),0);
+        if (ifTicketExist != null){
+            loginTicketDao.updateStatus(ifTicketExist,1);
+            String ticket = addTicket(u.getId());//用户登录成功后，下发ticket
+            map.put("ticket",ticket);
+        }else {
+            String ticket = addTicket(u.getId());//用户登录成功后，下发ticket
+            map.put("ticket",ticket);
+        }
 
         return map;
     }
@@ -92,11 +99,16 @@ public class UserService
         LoginTicket ticket = new LoginTicket();
         ticket.setUserId(userId);
         ticket.setStatus(0);
-        Date now = new Date();
-        now.setTime(now.getTime() + 1000*3600*24*30);
+        Calendar curr = Calendar.getInstance();
+        curr.set(Calendar.MONTH,curr.get(Calendar.MONTH) + 1);
+        Date now = curr.getTime();
         ticket.setTicket(UUID.randomUUID().toString().replaceAll("-",""));
         ticket.setExpired(now);
         loginTicketDao.addTicket(ticket);
         return ticket.getTicket();
+    }
+
+    public void logout(String ticket) {
+        loginTicketDao.updateStatus(ticket,1);
     }
 }
