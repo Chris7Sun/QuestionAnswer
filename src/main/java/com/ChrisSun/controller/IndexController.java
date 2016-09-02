@@ -2,6 +2,7 @@ package com.ChrisSun.controller;
 
 import com.ChrisSun.model.Question;
 import com.ChrisSun.model.ViewObject;
+import com.ChrisSun.service.LikeService;
 import com.ChrisSun.service.QuestionService;
 import com.ChrisSun.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class IndexController {
     private QuestionService questionService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private LikeService likeService;
 
     @RequestMapping(path = {"/","/index"}, method = {RequestMethod.GET,RequestMethod.POST})
     public String index(Model model){
