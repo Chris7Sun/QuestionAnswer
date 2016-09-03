@@ -6,6 +6,7 @@ import com.ChrisSun.model.User;
 import com.ChrisSun.model.ViewObject;
 import com.ChrisSun.service.MessageService;
 import com.ChrisSun.service.UserService;
+import com.ChrisSun.service.impl.SensitiveService;
 import com.ChrisSun.util.QaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +38,8 @@ public class MessageController {
     @Autowired
     private UserService userService;
     @Autowired
+    private SensitiveService sensitiveService;
+    @Autowired
     private HostHolder hostHolder;
 
     @RequestMapping(path = "/addMessage", method = RequestMethod.POST)
@@ -51,7 +55,8 @@ public class MessageController {
 
             Message message = new Message();
             //TODO add 敏感词过滤
-            message.setContent(content);
+            content = HtmlUtils.htmlEscape(content);
+            message.setContent(sensitiveService.filter(content));
             message.setFromId(hostHolder.getUser().getId());
             message.setToId(user.getId());
             message.setCreatedDate(new Date());

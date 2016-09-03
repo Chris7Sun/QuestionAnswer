@@ -46,7 +46,6 @@ public class QuestionController {
                               @RequestParam("content") String content) {
         try {
             Question question = new Question();
-            //TODO add 敏感词过滤
             question.setTitle(title);
             question.setContent(content);
             if (hostHolder.getUser() != null){

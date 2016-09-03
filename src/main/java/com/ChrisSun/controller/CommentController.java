@@ -5,6 +5,7 @@ import com.ChrisSun.model.EntityType;
 import com.ChrisSun.model.HostHolder;
 import com.ChrisSun.service.CommentService;
 import com.ChrisSun.service.QuestionService;
+import com.ChrisSun.service.impl.SensitiveService;
 import com.ChrisSun.util.QaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.Date;
 
@@ -27,6 +29,8 @@ public class CommentController {
     @Autowired
     private QuestionService questionService;
     @Autowired
+    private SensitiveService sensitiveService;
+    @Autowired
     private HostHolder hostHolder;
 
     @RequestMapping(value = "/addComment", method = RequestMethod.POST)
@@ -35,7 +39,8 @@ public class CommentController {
         try {
             Comment comment = new Comment();
             //TODO content过滤
-            comment.setContent(content);
+            content = HtmlUtils.htmlEscape(content);
+            comment.setContent(sensitiveService.filter(content));
             comment.setEntityId(questionId);
             comment.setEntityType(String.valueOf(EntityType.QUESTION_TYPE));
             comment.setCreatedDate(new Date());
