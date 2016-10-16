@@ -1,5 +1,6 @@
 package com.ChrisSun.controller;
 
+import com.ChrisSun.model.LoginTicket;
 import com.ChrisSun.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -35,6 +37,15 @@ public class LoginController {
             if (map.containsKey("ticket")) {
                 Cookie cookie = new Cookie("ticket",map.get("ticket"));
                 cookie.setPath("/");
+
+                String t = map.get("ticket");
+                LoginTicket ticket = userService.selectByTicket(t);
+                Date expireDate = ticket.getExpired();
+                long expireLong = expireDate.getTime();
+                long nowLong = new Date().getTime();
+                int interval = (int)((expireLong - nowLong)/1000);
+                cookie.setMaxAge(interval);
+
                 response.addCookie(cookie);
                 return "redirect:/";
             }else {
@@ -59,6 +70,15 @@ public class LoginController {
             if (map.containsKey("ticket")) {
                 Cookie cookie = new Cookie("ticket",map.get("ticket"));
                 cookie.setPath("/");
+
+                String t = map.get("ticket");
+                LoginTicket ticket = userService.selectByTicket(t);
+                Date expireDate = ticket.getExpired();
+                long expireLong = expireDate.getTime();
+                long nowLong = new Date().getTime();
+                int interval = (int)((expireLong - nowLong)/1000);
+                cookie.setMaxAge(interval);
+
                 response.addCookie(cookie);
                 if (!StringUtils.isBlank(next)){
                     return "redirect:" + next;

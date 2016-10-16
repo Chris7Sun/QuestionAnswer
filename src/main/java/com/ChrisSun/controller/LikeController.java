@@ -1,7 +1,12 @@
 package com.ChrisSun.controller;
 
+import com.ChrisSun.async.EventModel;
+import com.ChrisSun.async.EventProducer;
+import com.ChrisSun.async.EventType;
+import com.ChrisSun.model.Comment;
 import com.ChrisSun.model.EntityType;
 import com.ChrisSun.model.HostHolder;
+import com.ChrisSun.service.CommentService;
 import com.ChrisSun.service.LikeService;
 import com.ChrisSun.util.QaUtils;
 import org.slf4j.Logger;
@@ -24,6 +29,10 @@ public class LikeController {
     private LikeService likeService;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private EventProducer eventProducer;
 
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
@@ -31,6 +40,15 @@ public class LikeController {
         try {
             if (hostHolder.getUser() == null)
                 return QaUtils.getJSONString(999);
+
+            Comment comment = commentService.getCommentById(commentId);
+            eventProducer.fireEvent(new EventModel(EventType.LIKE)
+                    .setEntityType(String.valueOf(EntityType.COMMENT_TYPE))
+                    .setEntityId(commentId)
+                    .setActorId(hostHolder.getUser().getId())
+                    .setEntityOwnerId(comment.getUserId())
+                    .setExts("questionId", String.valueOf(comment.getEntityId())));
+
             long likeCount = likeService.like(hostHolder.getUser().getId(),String.valueOf(EntityType.COMMENT_TYPE) ,commentId);
             return QaUtils.getJSONString(0, String.valueOf(likeCount));
         }catch (Exception e) {

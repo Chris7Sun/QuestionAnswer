@@ -22,6 +22,8 @@ public interface CommentDao {
     @Select({"select ", SELECT_FIELDS, " from ", TABLE_NAME , " where entity_id=#{entityId} and entity_type=#{entityType}"})
     List<Comment> getByEntityIdAndType(@Param("entityId") int entityId,
                                        @Param("entityType") String entityType);
+    @Select({"select * from ",TABLE_NAME," where id=#{id}"})
+    Comment getCommentById(@Param("id") int id);
 
     @Update({"update ",TABLE_NAME, " set status=#{status} where id=#{id}"})
     void updateStatusById(@Param("id") int id,

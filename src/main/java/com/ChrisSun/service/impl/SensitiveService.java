@@ -44,7 +44,8 @@ public class SensitiveService implements InitializingBean {
         if (StringUtils.isBlank(text))
             return text;
 
-        int begin = 0, position = 0;
+        int begin = 0;// 回滚数
+        int position = 0;// 当前比较的位置
         TrieNode tempNode = rootNode;
         StringBuilder result = new StringBuilder();
 
@@ -59,6 +60,7 @@ public class SensitiveService implements InitializingBean {
                 ++position;
                 continue;
             }
+            // 当前位置的匹配结束
             if ((tempNode = tempNode.getSubNode(c)) == null){
                 result.append(text.charAt(begin));
                 position = ++begin;

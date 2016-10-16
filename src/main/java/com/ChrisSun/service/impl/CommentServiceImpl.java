@@ -35,4 +35,9 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(int id) {
         commentDao.updateStatusById(id, 1);
     }
+
+    @Override
+    public Comment getCommentById(int id) {
+        return commentDao.getCommentById(id);
+    }
 }
